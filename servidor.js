@@ -72,6 +72,57 @@ res.send("Erro ao inserir produto: "+erro)
 })
 });
 
+app.get('/alteraProduto', (req, res) => {
+
+    var idProduto = req.query.id
+
+    produto.findOne({
+        where: {
+            id: idProduto
+        }
+
+    }).then((produtos) => {
+
+        var formulario = 
+        `<form action="/updateProduto" method="post">
+            <input type='hidden' name='idUp' value='${produtos.id}'><br>
+            Código:<input type='text' name='codigoUp' id='codigo' value='${produtos.codigo}'> <br>
+            Nome do Produto: <input type='text' name='nomeUp' id='nome' value='${produtos.nome}'> <br>
+            Preço: <input type='text' name='precoUp' id='preco' value='${produtos.preco}'> <br>
+            Marca: <input type="text" name="marcaUp" id="marca" value='${produtos.marca}'><br>
+            <input type='submit' value='Cadastrar'>
+        </form>`
+
+        res.send(formulario)
+    }).catch((erro) => {
+        res.send('Erro: ' + erro)
+    })
+})
+
+app.post('/updateProduto', urlencodedParser, (req, res) => {
+
+    let idUp = req.body.idUp
+    let codigoUp = req.body.codigoUp
+    let nomeUp = req.body.nomeUp
+    let precoUp = req.body.precoUp
+    let marcaUp = req.body.marcaUp
+
+    produto.update({
+        codigo: codigoUp,
+        nome: nomeUp,
+        preco: precoUp,
+        marca: marcaUp
+    } , {
+        where: {
+            id: idUp
+        }
+    }).then((produto) => {
+        res.send('Produto alterado com sucesso!')
+    }).catch((erro) => {
+        res.send('Erro: ' + erro)
+    })
+})
+
 	app.listen(port, () => {
  console.log("Esta aplicação está escutando a porta" + port)
 })
